@@ -3,9 +3,6 @@ import express, { type Express } from "express";
 import helmet from "helmet";
 import { pino } from "pino";
 
-import { openAPIRouter } from "@/api-docs/openAPIRouter";
-import { healthCheckRouter } from "@/api/healthCheck/healthCheckRouter";
-import { userRouter } from "@/api/user/userRouter";
 import errorHandler from "@/common/middleware/errorHandler";
 import rateLimiter from "@/common/middleware/rateLimiter";
 import requestLogger from "@/common/middleware/requestLogger";
@@ -27,12 +24,9 @@ app.use(rateLimiter);
 // Request logging
 app.use(requestLogger);
 
-// Routes
-app.use("/health-check", healthCheckRouter);
-app.use("/users", userRouter);
-
-// Swagger UI
-app.use(openAPIRouter);
+// // Routes
+// app.use("/health-check", healthCheckRouter);
+// app.use("/users", userRouter);
 
 // Error handlers
 app.use(errorHandler());
