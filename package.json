@@ -1,20 +1,21 @@
 {
-  "name": "todo-app",
-  "version": "0.0.0",
-  "description": "Full-stack Todo application with TypeScript",
-  "author": "Łukasz Kowalik",
-  "private": true,
-  "scripts": {
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2"
-  },
-  "lint-staged": {
-    "*.{js,ts,cjs,mjs,d.cts,d.mts,json,jsonc}": [
-      "biome check --apply --no-errors-on-unmatched"
-    ]
-  },
-  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
+	"name": "todo-app",
+	"version": "0.0.0",
+	"description": "Full-stack Todo application with TypeScript",
+	"author": "Łukasz Kowalik",
+	"private": true,
+	"scripts": {
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"@biomejs/biome": "1.9.4"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,json,jsonc}": [
+			"biome check --apply --no-errors-on-unmatched"
+		]
+	},
+	"packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
 }
