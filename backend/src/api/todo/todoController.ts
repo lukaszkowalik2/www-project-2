@@ -3,9 +3,10 @@ import { StatusCodes } from "http-status-codes";
 
 import { todoService } from "./todoService";
 import { CreateTodoSchema, GetTodoSchema, UpdateTodoSchema } from "./todoModel";
-import { ServiceResponseDelete, ServiceResponseItems, ServiceResponsePost } from "@/common/models/serviceResponse";
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants";
 import { logger } from "@/server";
+import { ServiceResponse } from "@/common/models/serviceResponse";
+import { ServiceResponseItems } from "@/common/models/ServiceResponseItems";
 
 class TodoController {
   async createTodo(req: Request, res: Response) {
@@ -15,7 +16,7 @@ class TodoController {
       res.status(todo.status).json(todo);
     } catch (error) {
       logger.error(error);
-      const failed = ServiceResponsePost.failure(StatusCodes.BAD_REQUEST, "Failed to create todo");
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to create todo");
       res.status(failed.status).json(failed);
     }
   }
@@ -28,7 +29,7 @@ class TodoController {
       res.status(todo.status).json(todo);
     } catch (error) {
       logger.error(error);
-      const failed = ServiceResponsePost.failure(StatusCodes.BAD_REQUEST, "Failed to update todo");
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to update todo");
       res.status(failed.status).json(failed);
     }
   }
@@ -40,7 +41,7 @@ class TodoController {
       res.status(todo.status).json(todo);
     } catch (error) {
       logger.error(error);
-      const failed = ServiceResponseDelete.failure(StatusCodes.BAD_REQUEST);
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to delete todo");
       res.status(failed.status).json(failed);
     }
   }

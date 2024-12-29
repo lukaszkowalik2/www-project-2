@@ -4,8 +4,9 @@ import { StatusCodes } from "http-status-codes";
 import { userService } from "./userService";
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants";
 import { CreateUserSchema, DeleteUserSchema, GetUsersSchema, UpdateUserSchema } from "./userModel";
-import { ServiceResponseDelete, ServiceResponseItems, ServiceResponsePost } from "@/common/models/serviceResponse";
 import { logger } from "@/server";
+import { ServiceResponse } from "@/common/models/serviceResponse";
+import { ServiceResponseItems } from "@/common/models/ServiceResponseItems";
 
 class UserController {
   async createUser(req: Request, res: Response) {
@@ -17,15 +18,15 @@ class UserController {
     } catch (error) {
       logger.error(error);
       if (error instanceof Error && error.message === "Email already exists") {
-        const failed = ServiceResponsePost.failure(StatusCodes.CONFLICT, "Email already exists");
+        const failed = ServiceResponse.failure(StatusCodes.CONFLICT, "Email already exists");
         res.status(failed.status).json(failed);
         return;
       } else if (error instanceof Error && error.message === "Username already exists") {
-        const failed = ServiceResponsePost.failure(StatusCodes.CONFLICT, "Username already exists");
+        const failed = ServiceResponse.failure(StatusCodes.CONFLICT, "Username already exists");
         res.status(failed.status).json(failed);
         return;
       }
-      const failed = ServiceResponsePost.failure(StatusCodes.BAD_REQUEST, "Failed to create user");
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to create user");
       res.status(failed.status).json(failed);
     }
   }
@@ -65,11 +66,11 @@ class UserController {
     } catch (error) {
       logger.error(error);
       if (error instanceof Error && error.message === "User not found") {
-        const failed = ServiceResponsePost.failure(StatusCodes.NOT_FOUND, "User not found");
+        const failed = ServiceResponse.failure(StatusCodes.NOT_FOUND, "User not found");
         res.status(failed.status).json(failed);
         return;
       }
-      const failed = ServiceResponseDelete.failure(StatusCodes.INTERNAL_SERVER_ERROR);
+      const failed = ServiceResponse.failure(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to delete user");
       res.status(failed.status).json(failed);
     }
   }
@@ -90,11 +91,11 @@ class UserController {
     } catch (error) {
       logger.error(error);
       if (error instanceof Error && error.message === "User not found") {
-        const failed = ServiceResponsePost.failure(StatusCodes.NOT_FOUND, "User not found");
+        const failed = ServiceResponse.failure(StatusCodes.NOT_FOUND, "User not found");
         res.status(failed.status).json(failed);
         return;
       }
-      const failed = ServiceResponsePost.failure(StatusCodes.BAD_REQUEST, "Failed to update user");
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to update user");
       res.status(failed.status).json(failed);
     }
   }

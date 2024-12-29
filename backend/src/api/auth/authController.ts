@@ -1,9 +1,10 @@
-import { ServiceResponsePost } from "@/common/models/serviceResponse";
+import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+
 import { LoginSchema } from "./authModel";
 import { authService } from "./authService";
-import { StatusCodes } from "http-status-codes";
-import { Request, Response } from "express";
 import { logger } from "@/server";
+import { ServiceResponse } from "@/common/models/serviceResponse";
 
 class AuthController {
   async login(req: Request, res: Response) {
@@ -13,7 +14,7 @@ class AuthController {
       res.status(StatusCodes.OK).json(authResponse);
     } catch (error) {
       logger.error(error);
-      const failed = ServiceResponsePost.failure(StatusCodes.BAD_REQUEST, "Failed to login");
+      const failed = ServiceResponse.failure(StatusCodes.BAD_REQUEST, "Failed to login");
       res.status(failed.status).send(failed);
     }
   }
@@ -24,7 +25,7 @@ class AuthController {
       const token = authHeader?.split(" ")[1];
 
       if (!token) {
-        const failed = ServiceResponsePost.failure(StatusCodes.UNAUTHORIZED, "No token provided");
+        const failed = ServiceResponse.failure(StatusCodes.UNAUTHORIZED, "No token provided");
         return res.status(failed.status).json(failed);
       }
 
@@ -32,7 +33,7 @@ class AuthController {
       res.status(verifyResponse.status).json(verifyResponse);
     } catch (error) {
       logger.error(error);
-      const failed = ServiceResponsePost.failure(StatusCodes.UNAUTHORIZED, "Failed to verify token");
+      const failed = ServiceResponse.failure(StatusCodes.UNAUTHORIZED, "Failed to verify token");
       res.status(failed.status).json(failed);
     }
   }

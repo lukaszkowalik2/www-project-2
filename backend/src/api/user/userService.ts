@@ -1,20 +1,23 @@
 import { StatusCodes } from "http-status-codes";
 
 import { userRepository } from "@/api/user/userRepository";
-import { ServiceResponseDelete, ServiceResponseItems, ServiceResponsePost } from "@/common/models/serviceResponse";
 
 import { CreateUser, DeleteUser, GetUsers, UpdateUser, type User } from "@/api/user/userModel";
 import { generateTokens } from "@/common/utils/jwt";
 import { DEFAULT_PER_PAGE } from "@/constants";
 import { DEFAULT_PAGE } from "@/constants";
+import { ServiceResponseStatus } from "@/common/models/ServiceResponseStatus";
+import { ServiceResponseItem } from "@/common/models/ServiceResponseItem";
+import { ServiceResponse } from "@/common/models/serviceResponse";
+import { ServiceResponseItems } from "@/common/models/ServiceResponseItems";
 
 export class UserService {
-  async createUser(body: CreateUser): Promise<ServiceResponsePost<User & { tokens: { accessToken: string; refreshToken: string } }>> {
+  async createUser(body: CreateUser): Promise<ServiceResponseItem<User & { token: string }>> {
     const user = await userRepository.createUser(body);
     const tokens = generateTokens(user.id);
     await userRepository.updateRefreshToken(user.id, tokens.refreshToken);
 
-    return ServiceResponsePost.success({ ...user, tokens });
+    return ServiceResponseItem.success({ ...user, token: tokens.accessToken });
   }
 
   async getAllUsers(params: GetUsers): Promise<ServiceResponseItems<User>> {
@@ -27,23 +30,23 @@ export class UserService {
     return ServiceResponseItems.success(users, StatusCodes.OK, usersCount, params.page, params.per_page);
   }
 
-  async updateUser(id: number, data: UpdateUser): Promise<ServiceResponsePost<User>> {
+  async updateUser(id: number, data: UpdateUser): Promise<ServiceResponseItem<User> | ServiceResponse> {
     const user = await userRepository.updateUser(id, data);
     await userRepository.updateUpdatedAt(id);
-    return ServiceResponsePost.success(user);
+    return ServiceResponseItem.success(user);
   }
 
-  async deleteUser(params: Required<DeleteUser>): Promise<ServiceResponseDelete> {
+  async deleteUser(params: Required<DeleteUser>): Promise<ServiceResponseStatus> {
     await userRepository.deleteUser(params);
-    return ServiceResponseDelete.success();
+    return ServiceResponseStatus.success();
   }
 
-  async getUserById(id: number): Promise<ServiceResponsePost<User>> {
+  async getUserById(id: number): Promise<ServiceResponseItem<User> | ServiceResponse> {
     const user = await userRepository.getUserById(id);
     if (!user) {
-      return ServiceResponsePost.failure(StatusCodes.NOT_FOUND, "User not found");
+      return ServiceResponseItem.failure(StatusCodes.NOT_FOUND, "User not found");
     }
-    return ServiceResponsePost.success(user);
+    return ServiceResponseItem.success(user);
   }
 }
 

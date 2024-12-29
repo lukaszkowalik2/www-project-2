@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 
-import { ServiceResponseAuthSchema, ServiceResponseDeleteSchema, ServiceResponseItemsSchema, ServiceResponsePostSchema, ServiceResponsePutSchema, ServiceResponseSingleItemSchema } from "@/common/models/serviceResponse";
+import { ServiceResponseItemSchema } from "@/common/models/ServiceResponseItem";
+import { ServiceResponseItemsSchema } from "@/common/models/ServiceResponseItems";
+import { ServiceResponseStatusSchema } from "@/common/models/ServiceResponseStatus";
 
 import type { z } from "zod";
 
@@ -10,7 +12,7 @@ export function createApiObjectResponse(schema: z.ZodTypeAny, description: strin
       description,
       content: {
         "application/json": {
-          schema: ServiceResponseSingleItemSchema(schema),
+          schema: ServiceResponseItemSchema(schema),
         },
       },
     },
@@ -34,25 +36,25 @@ export function createApiPostResponse(schema: z.ZodTypeAny, description: string,
   return {
     [statusCode]: {
       description,
-      content: { "application/json": { schema: ServiceResponsePostSchema(schema) } },
+      content: { "application/json": { schema: ServiceResponseItemSchema(schema) } },
     },
   };
 }
 
 export function createApiDeleteResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
   return {
-    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseDeleteSchema(schema) } } },
+    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseStatusSchema() } } },
   };
 }
 
 export function createApiAuthResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
   return {
-    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseAuthSchema(schema) } } },
+    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseItemsSchema(schema) } } },
   };
 }
 
 export function createApiPutResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
   return {
-    [statusCode]: { description, content: { "application/json": { schema: ServiceResponsePutSchema(schema) } } },
+    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseItemSchema(schema) } } },
   };
 }
