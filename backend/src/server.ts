@@ -10,6 +10,9 @@ import { env } from "@/common/utils/envConfig";
 import { openAPIRouter } from "@/api-docs/openAPIRouter";
 
 import { userRouter } from "@/api/user/userRouter";
+import { todoRouter } from "./api/todo/todoRouter";
+import { authRouter } from "./api/auth/authRouter";
+import { healthCheckRouter } from "./api/health/healthCheckRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -30,6 +33,9 @@ app.use(requestLogger);
 // Routes
 // app.use("/health-check", healthCheckRouter);
 app.use("/users", userRouter);
+app.use("/todos", todoRouter);
+app.use("/", authRouter);
+app.use("/health", healthCheckRouter);
 
 // Swagger UI
 app.use(openAPIRouter);

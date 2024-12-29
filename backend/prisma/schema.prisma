@@ -14,9 +14,36 @@ datasource db {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  name        String
-  email       String    @unique
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now())
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  email         String    @unique
+  password      String
+  refresh_token String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+  todos         Todo[]
+  avatar        String?
+  bio           String?   @db.Text
+  last_login    DateTime?
+}
+
+model Todo {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String?
+  status        TodoStatus @default(PENDING)
+  due_date      DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+  user          User      @relation(fields: [user_id], references: [id])
+  user_id       Int
+
+  @@map("todos")
+}
+
+enum TodoStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }

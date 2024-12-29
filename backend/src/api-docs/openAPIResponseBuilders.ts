@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import type { z } from "zod";
 
-import { ServiceResponseDeleteSchema, ServiceResponseItemsSchema, ServiceResponsePostSchema, ServiceResponseSingleItemSchema } from "@/common/models/serviceResponse";
+import { ServiceResponseAuthSchema, ServiceResponseDeleteSchema, ServiceResponseItemsSchema, ServiceResponsePostSchema, ServiceResponsePutSchema, ServiceResponseSingleItemSchema } from "@/common/models/serviceResponse";
+
+import type { z } from "zod";
 
 export function createApiObjectResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
   return {
@@ -41,5 +42,17 @@ export function createApiPostResponse(schema: z.ZodTypeAny, description: string,
 export function createApiDeleteResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
   return {
     [statusCode]: { description, content: { "application/json": { schema: ServiceResponseDeleteSchema(schema) } } },
+  };
+}
+
+export function createApiAuthResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
+  return {
+    [statusCode]: { description, content: { "application/json": { schema: ServiceResponseAuthSchema(schema) } } },
+  };
+}
+
+export function createApiPutResponse(schema: z.ZodTypeAny, description: string, statusCode = StatusCodes.OK) {
+  return {
+    [statusCode]: { description, content: { "application/json": { schema: ServiceResponsePutSchema(schema) } } },
   };
 }

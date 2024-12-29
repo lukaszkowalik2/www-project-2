@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/Constants";
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
@@ -160,3 +160,51 @@ export const ServiceResponseDeleteSchema = <T extends z.ZodTypeAny>(dataSchema: 
     success: z.boolean(),
     status: z.number(),
   });
+
+export const ServiceResponseAuthSchema = z.object({
+  success: z.boolean(),
+  token: z.string(),
+  status: z.number(),
+});
+
+export class ServiceResponseAuth {
+  readonly success: boolean;
+  readonly token: string;
+  readonly status: number;
+
+  constructor(success: boolean, token: string, status: number) {
+    this.success = success;
+    this.token = token;
+    this.status = status;
+  }
+
+  static success(token: string, status: number = StatusCodes.OK) {
+    return new ServiceResponseAuth(true, token, status);
+  }
+
+  static failure(status: number = StatusCodes.BAD_REQUEST) {
+    return new ServiceResponseAuth(false, "", status);
+  }
+}
+
+export const ServiceResponsePutSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+  z.object({
+    success: z.boolean(),
+    data: dataSchema,
+    status: z.number(),
+    message: z.string().optional(),
+  });
+
+export class ServiceResponsePut<T = null> {
+  readonly success: boolean;
+  readonly data: T | null;
+  readonly status: number;
+  readonly message?: string;
+
+  constructor(success: boolean, data: T | null, status: number, message?: string) {
+    this.success = success;
+    this.data = data;
+    this.status = status;
+    this.message = message;
+  }
+}
