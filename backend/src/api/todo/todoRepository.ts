@@ -1,6 +1,6 @@
 import { prisma } from "@/prismaClient";
 
-import type { CreateTodoInput, UpdateTodoInput } from "./todoModel";
+import type { CreateTodoInput, GetTodoInput, UpdateTodoInput } from "./todoModel";
 
 export class TodoRepository {
   async create(data: CreateTodoInput) {
@@ -26,17 +26,21 @@ export class TodoRepository {
     return prisma.todo.findMany({ where: { userId } });
   }
 
-  async findAll(params: { page: number; per_page: number }) {
-    const { page, per_page } = params;
-    const skip = (page - 1) * per_page;
+  async findAllForUser(params: GetTodoInput) {
+    const skip = (params.page - 1) * params.per_page;
 
     const [todos, total] = await Promise.all([
       prisma.todo.findMany({
+        where: { user_id: params.id },
         skip,
-        take: per_page,
+        take: params.per_page,
         orderBy: { created_at: "desc" },
       }),
-      prisma.todo.count(),
+      prisma.todo.count({
+        where: {
+          user_id: params.id,
+        },
+      }),
     ]);
 
     return { todos, total };

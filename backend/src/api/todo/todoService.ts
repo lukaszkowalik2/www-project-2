@@ -1,8 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import { todoRepository } from "./todoRepository";
 
-import type { CreateTodoInput, UpdateTodoInput } from "./todoModel";
 import { ServiceResponse } from "@/common/models/serviceResponse";
+import { ServiceResponseItems } from "@/common/models/ServiceResponseItems";
+import { ServiceResponseItem } from "@/common/models/ServiceResponseItem";
+
+import type { CreateTodoInput, GetTodoInput, UpdateTodoInput } from "./todoModel";
 
 class TodoService {
   async createTodo(data: CreateTodoInput) {
@@ -17,7 +20,7 @@ class TodoService {
   async updateTodo(id: number, data: UpdateTodoInput) {
     try {
       const todo = await todoRepository.update(id, data);
-      return ServiceResponse.success(StatusCodes.OK, todo);
+      return ServiceResponseItem.success(todo, StatusCodes.OK, "Todo updated successfully");
     } catch (error) {
       return ServiceResponse.failure(StatusCodes.BAD_REQUEST);
     }
@@ -32,35 +35,26 @@ class TodoService {
     }
   }
 
-  async getTodoById(id: number) {
-    try {
-      const todo = await todoRepository.findById(id);
-      if (!todo) {
-        return ServiceResponse.failure(StatusCodes.NOT_FOUND, "Todo not found");
-      }
-      const count = await todoRepository.countTodosByUserId(todo.user_id);
+  // async getTodoById(id: number) {
+  //   try {
+  //     const todo = await todoRepository.findById(id);
+  //     if (!todo) {
+  //       return ServiceResponse.failure(StatusCodes.NOT_FOUND, "Todo not found");
+  //     }
+  //     const count = await todoRepository.countTodosByUserId(todo.user_id);
 
-      return ServiceResponse.success(StatusCodes.OK);
-    } catch (error) {
-      return ServiceResponse.failure(StatusCodes.BAD_REQUEST);
-    }
-  }
+  //     return ServiceResponse.success(StatusCodes.OK);
+  //   } catch (error) {
+  //     return ServiceResponse.failure(StatusCodes.BAD_REQUEST);
+  //   }
+  // }
 
-  async getAllTodos(params: { page: number; per_page: number }) {
+  async getAllTodos(params: GetTodoInput) {
     try {
-      const { todos, total } = await todoRepository.findAll(params);
-      return ServiceResponse.success(StatusCodes.OK);
+      const { todos, total } = await todoRepository.findAllForUser(params);
+      return ServiceResponseItems.success(todos, StatusCodes.OK, total);
     } catch (error) {
-      return ServiceResponse.failure(StatusCodes.BAD_REQUEST);
-    }
-  }
-
-  async getTodosByUserId(userId: number) {
-    try {
-      const todos = await todoRepository.findByUserId(userId);
-      return ServiceResponse.success(StatusCodes.OK);
-    } catch (error) {
-      return ServiceResponse.failure(StatusCodes.BAD_REQUEST);
+      return ServiceResponseItems.failure(StatusCodes.BAD_REQUEST);
     }
   }
 }
