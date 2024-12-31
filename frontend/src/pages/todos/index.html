@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todos</title>
+    <link href="/style.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100">
+    <div class="min-h-screen p-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+          <h1 class="text-3xl font-bold text-gray-800">My Todos</h1>
+          <button id="addTodoBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Add Todo</button>
+        </div>
+        <div id="todoList" class="space-y-4">
+          <!-- Todos will be inserted here -->
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./todos.ts"></script>
+  </body>
+</html>

@@ -1,2 +1,4 @@
 /node_modules
 .env
+/frontend/.pnpm-store
+/backend/.pnpm-store

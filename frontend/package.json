@@ -14,6 +14,7 @@
     "format": "biome format src/"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "ky": "^1.7.4",
     "zod": "^3.24.1"
   },
