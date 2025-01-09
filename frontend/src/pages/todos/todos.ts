@@ -1,6 +1,6 @@
 import invariant from "tiny-invariant";
 
-import { checkTokenValidity } from "../../utils/auth.js";
+import { checkTokenValidity, logout } from "../../utils/auth.js";
 import { createTodo, deleteTodo, getAllTodos, updateTodo } from "../../services/todos.services.js";
 
 import type { Todo, TodoStatus } from "../../types/todo.js";
@@ -11,8 +11,10 @@ let userId: number | undefined;
 async function callback(result: { valid: boolean; userId?: number }) {
   if (!result.valid) {
     window.location.href = "/src/pages/login";
+    return;
   }
   userId = result.userId;
+
   await loadTodos();
   setupEventListeners();
 }
@@ -94,6 +96,12 @@ function setupEventListeners() {
       const todoId = Number(target.closest("[data-todo-id]")?.getAttribute("data-todo-id"));
       if (todoId) await handleDeleteTodo(todoId);
     }
+  });
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  logoutBtn?.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/src/pages/login";
   });
 
   setupModalEventListeners();
