@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (response.success && response.item) {
         localStorage.setItem("token", response.item);
         showAlert("Successfully logged in!", "success");
-        window.location.href = "/src/pages/todos";
+        window.location.href = "/src/pages/todos/";
       } else {
         showAlert("Login failed. Please try again.", "error");
       }
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function callback(result: { valid: boolean; userId?: number }) {
   if (result.valid) {
-    window.location.href = "/src/pages/todos";
+    window.location.href = "/src/pages/todos/";
   }
 }
 

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.item?.token) {
         showAlert("Registration successful!", "success");
         localStorage.setItem("token", response.item.token);
-        window.location.href = "/src/pages/todos";
+        window.location.href = "/src/pages/todos/";
       } else {
         showAlert("Registration failed. Please try again.", "error");
       }
@@ -121,7 +121,7 @@ const clearAllFieldErrors = () => {
 
 function callback(result: { valid: boolean; userId?: number }) {
   if (result.valid) {
-    window.location.href = "/src/pages/todos";
+    window.location.href = "/src/pages/todos/";
   }
 }
 
