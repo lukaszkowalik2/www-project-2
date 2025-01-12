@@ -1,10 +1,8 @@
-import ky from "ky";
-
 import { showAlert } from "../../utils/notifications.js";
 import { type LoginInput, LoginSchema } from "../../schemas/login.js";
 import { checkTokenValidity } from "../../utils/auth.js";
-
-import type { ServiceResponseItem } from "../../types/serviceResponses.js";
+import { login } from "../../services/auth.services.js";
+import { ROUTES } from "../../constants.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("loginForm") as HTMLFormElement;
@@ -61,16 +59,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      const response = await ky
-        .post<ServiceResponseItem<string>>("http://localhost:8080/login", {
-          json: validatedData.data,
-        })
-        .json();
+      const response = await login(validatedData.data);
 
       if (response.success && response.item) {
         localStorage.setItem("token", response.item);
         showAlert("Successfully logged in!", "success");
-        window.location.href = "/src/pages/todos/";
+        window.location.href = ROUTES.TODOS;
       } else {
         showAlert("Login failed. Please try again.", "error");
       }
@@ -86,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function callback(result: { valid: boolean; userId?: number }) {
   if (result.valid) {
-    window.location.href = "/src/pages/todos/";
+    window.location.href = ROUTES.TODOS;
   }
 }
 

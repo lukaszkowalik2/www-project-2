@@ -4,15 +4,16 @@ import { checkTokenValidity } from "../../utils/auth.js";
 import { createTodo, deleteTodo, getAllTodos, updateTodo } from "../../services/todos.services.js";
 import { getUser } from "../../services/user.services.js";
 import { showAlert } from "../../utils/notifications.js";
+import { logout } from "../../services/auth.services.js";
+import { ROUTES } from "../../constants.js";
 
 import type { Todo, TodoStatus } from "../../types/todo.js";
 
 let userId: number | undefined;
-let userName: string | undefined;
 
 async function callback(result: { valid: boolean; userId?: number }) {
   if (!result.valid) {
-    window.location.href = "/src/pages/login";
+    window.location.href = ROUTES.LOGIN;
     return;
   }
   userId = result.userId;
@@ -59,19 +60,16 @@ function renderTodos(todos: Todo[]) {
     CANCELLED: 0,
   };
 
-  // Clear all sections
   Object.values(sections).forEach((section) => {
     section.innerHTML = "";
   });
 
-  // Sort todos by due date
   todos.sort((a, b) => {
     if (!a.due_date) return 1;
     if (!b.due_date) return -1;
     return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
   });
 
-  // Distribute todos to their respective sections
   todos.forEach((todo) => {
     counts[todo.status]++;
     sections[todo.status].innerHTML += `
@@ -112,23 +110,12 @@ function renderTodos(todos: Todo[]) {
     `;
   });
 
-  // Update counts
   Object.entries(counts).forEach(([status, count]) => {
     const countElement = document.getElementById(`${status.toLowerCase()}Count`);
     if (countElement) {
       countElement.textContent = String(count);
     }
   });
-}
-
-function getStatusColor(status: TodoStatus): string {
-  const colors = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    IN_PROGRESS: "bg-blue-100 text-blue-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELLED: "bg-red-100 text-red-800",
-  };
-  return colors[status];
 }
 
 function setupEventListeners() {
@@ -150,10 +137,7 @@ function setupEventListeners() {
   });
 
   const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn?.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "/src/pages/login";
-  });
+  logoutBtn?.addEventListener("click", logout);
 
   setupModalEventListeners();
 }
@@ -172,7 +156,6 @@ function showAddTodoModal() {
   modal.classList.remove("hidden");
   modal.classList.add("flex");
 
-  // Focus on title input
   const titleInput = form.querySelector('[name="title"]') as HTMLInputElement;
   titleInput.focus();
 }
@@ -192,7 +175,6 @@ async function showEditTodoModal(todoId: number) {
       return;
     }
 
-    // Set form values
     const titleInput = form.querySelector('[name="title"]') as HTMLInputElement;
     const descriptionInput = form.querySelector('[name="description"]') as HTMLTextAreaElement;
     const statusInput = form.querySelector('[name="status"]') as HTMLSelectElement;
@@ -203,7 +185,6 @@ async function showEditTodoModal(todoId: number) {
     statusInput.value = todo.status;
 
     if (todo.due_date) {
-      // Convert ISO string to local datetime-local format
       const dueDate = new Date(todo.due_date);
       const year = dueDate.getFullYear();
       const month = String(dueDate.getMonth() + 1).padStart(2, "0");
@@ -219,11 +200,9 @@ async function showEditTodoModal(todoId: number) {
     submitBtnText.textContent = "Update";
     form.dataset.todoId = todoId.toString();
 
-    // Show modal with animation
     modal.classList.remove("hidden");
     modal.classList.add("flex");
 
-    // Focus on title input
     titleInput.focus();
   } catch (error) {
     console.error("Failed to load todo details:", error);

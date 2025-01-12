@@ -1,5 +1,7 @@
 import ky from "ky";
+
 import { showLoader, hideLoader } from "./loader.js";
+import { logout } from "../services/auth.services.js";
 
 export const checkTokenValidity = (callback?: (result: { valid: boolean; userId?: number }) => void): void => {
   const token = localStorage.getItem("token");
@@ -20,7 +22,7 @@ export const checkTokenValidity = (callback?: (result: { valid: boolean; userId?
     .then((response) => {
       hideLoader();
       if (!response.success || !response.item.valid) {
-        localStorage.removeItem("token");
+        logout();
         callback?.({ valid: false });
         return;
       }
@@ -32,9 +34,8 @@ export const checkTokenValidity = (callback?: (result: { valid: boolean; userId?
     })
     .catch((error) => {
       hideLoader();
-      localStorage.removeItem("token");
+      logout();
       callback?.({ valid: false });
-      window.location.href = "/src/pages/404";
     });
 };
 
@@ -42,9 +43,4 @@ export const isAuthenticated = (callback: (isValid: boolean) => void): void => {
   checkTokenValidity((result) => {
     callback(result.valid);
   });
-};
-
-export const logout = (): void => {
-  localStorage.removeItem("token");
-  window.location.href = "/src/pages/login";
 };

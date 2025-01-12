@@ -7,4 +7,4 @@ export const RegisterSchema = z.object({
   avatar: z.string().url().optional(),
   bio: z.string().max(500).optional(),
 });
-export type Register = z.infer<typeof RegisterSchema>;
+export type RegisterInput = z.infer<typeof RegisterSchema>;

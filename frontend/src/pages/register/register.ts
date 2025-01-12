@@ -1,11 +1,9 @@
-import ky from "ky";
-
-import { RegisterSchema, type Register } from "../../schemas/register.js";
+import { RegisterSchema, type RegisterInput } from "../../schemas/register.js";
 import { showAlert } from "../../utils/notifications.js";
 import { checkTokenValidity } from "../../utils/auth.js";
 
-import type { ServiceResponseItem } from "../../types/serviceResponses.js";
-import type { User } from "../../types/user.js";
+import { register } from "../../services/auth.services.js";
+import { ROUTES } from "../../constants.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("registerForm") as HTMLFormElement;
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const formData = new FormData(registerForm);
-    const registerData: Register = {
+    const registerData: RegisterInput = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
@@ -43,15 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const response = await ky
-        .post<ServiceResponseItem<User & { token: string }>>("http://localhost:8080/users", {
-          json: validatedData.data,
-        })
-        .json();
+      const response = await register(validatedData.data);
       if (response.item?.token) {
         showAlert("Registration successful!", "success");
         localStorage.setItem("token", response.item.token);
-        window.location.href = "/src/pages/todos/";
+        window.location.href = ROUTES.TODOS;
       } else {
         showAlert("Registration failed. Please try again.", "error");
       }
@@ -121,7 +115,7 @@ const clearAllFieldErrors = () => {
 
 function callback(result: { valid: boolean; userId?: number }) {
   if (result.valid) {
-    window.location.href = "/src/pages/todos/";
+    window.location.href = ROUTES.TODOS;
   }
 }
 
