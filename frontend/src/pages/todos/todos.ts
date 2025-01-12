@@ -1,12 +1,14 @@
 import invariant from "tiny-invariant";
 
-import { checkTokenValidity, logout } from "../../utils/auth.js";
+import { checkTokenValidity } from "../../utils/auth.js";
 import { createTodo, deleteTodo, getAllTodos, updateTodo } from "../../services/todos.services.js";
-
-import type { Todo, TodoStatus } from "../../types/todo.js";
+import { getUser } from "../../services/user.services.js";
 import { showAlert } from "../../utils/notifications.js";
 
+import type { Todo, TodoStatus } from "../../types/todo.js";
+
 let userId: number | undefined;
+let userName: string | undefined;
 
 async function callback(result: { valid: boolean; userId?: number }) {
   if (!result.valid) {
@@ -14,6 +16,15 @@ async function callback(result: { valid: boolean; userId?: number }) {
     return;
   }
   userId = result.userId;
+
+  try {
+    invariant(userId, "User ID is not set");
+
+    const userData = await getUser(userId);
+    document.getElementById("userEmail")!.textContent = userData.item.name;
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+  }
 
   await loadTodos();
   setupEventListeners();
@@ -34,40 +45,80 @@ async function loadTodos() {
 }
 
 function renderTodos(todos: Todo[]) {
-  const todoList = document.getElementById("todoList")!;
-  todoList.innerHTML = todos
-    .map(
-      (todo) => `
-        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden" data-todo-id="${todo.id}">
-          <div class="p-4 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-semibold text-gray-800 mb-1">${todo.title}</h3>
-                <p class="text-gray-600 text-sm mb-3 line-clamp-2">${todo.description || "No description"}</p>
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2.5 py-1 text-sm rounded-full ${getStatusColor(todo.status)}">${todo.status}</span>
-                  ${
-                    todo.due_date
-                      ? `<span class="text-sm text-gray-500 flex items-center gap-1">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          Due: ${new Date(todo.due_date).toLocaleDateString()}
-                        </span>`
-                      : ""
-                  }
-                </div>
-              </div>
-              <div class="flex items-center gap-2 sm:flex-col sm:items-end">
-                <button class="edit-todo-btn text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
-                <button class="delete-todo-btn text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+  const sections = {
+    PENDING: document.getElementById("pendingTodos")!,
+    IN_PROGRESS: document.getElementById("inProgressTodos")!,
+    COMPLETED: document.getElementById("completedTodos")!,
+    CANCELLED: document.getElementById("cancelledTodos")!,
+  };
+
+  const counts = {
+    PENDING: 0,
+    IN_PROGRESS: 0,
+    COMPLETED: 0,
+    CANCELLED: 0,
+  };
+
+  // Clear all sections
+  Object.values(sections).forEach((section) => {
+    section.innerHTML = "";
+  });
+
+  // Sort todos by due date
+  todos.sort((a, b) => {
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+  });
+
+  // Distribute todos to their respective sections
+  todos.forEach((todo) => {
+    counts[todo.status]++;
+    sections[todo.status].innerHTML += `
+      <div class="bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow transition-shadow duration-200 overflow-hidden" data-todo-id="${todo.id}">
+        <div class="p-4">
+          <div class="flex flex-col gap-2">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="text-sm font-medium text-gray-800">${todo.title}</h3>
+              <div class="flex items-center gap-1">
+                <button class="edit-todo-btn text-blue-600 hover:text-blue-800 p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="delete-todo-btn text-red-600 hover:text-red-800 p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
               </div>
             </div>
+            ${todo.description ? `<p class="text-xs text-gray-600 line-clamp-2">${todo.description}</p>` : ""}
+            ${
+              todo.due_date
+                ? `
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                ${new Date(todo.due_date).toLocaleDateString()}
+              </div>
+            `
+                : ""
+            }
           </div>
         </div>
-      `
-    )
-    .join("");
+      </div>
+    `;
+  });
+
+  // Update counts
+  Object.entries(counts).forEach(([status, count]) => {
+    const countElement = document.getElementById(`${status.toLowerCase()}Count`);
+    if (countElement) {
+      countElement.textContent = String(count);
+    }
+  });
 }
 
 function getStatusColor(status: TodoStatus): string {

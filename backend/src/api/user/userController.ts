@@ -99,6 +99,31 @@ class UserController {
       res.status(failed.status).json(failed);
     }
   }
+
+  async getUser(req: Request, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+          success: false,
+          message: "Unauthorized",
+          status: StatusCodes.UNAUTHORIZED,
+        });
+      }
+
+      const user = await userService.getUserById(userId);
+      res.json(user);
+    } catch (error) {
+      logger.error(error);
+      if (error instanceof Error && error.message === "User not found") {
+        const failed = ServiceResponse.failure(StatusCodes.NOT_FOUND, "User not found");
+        res.status(failed.status).json(failed);
+        return;
+      }
+      const failed = ServiceResponse.failure(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to fetch user");
+      res.status(failed.status).json(failed);
+    }
+  }
 }
 
 export const userController = new UserController();

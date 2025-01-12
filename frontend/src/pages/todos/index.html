@@ -6,7 +6,7 @@
     <title>Todos</title>
     <link href="/src/main.css" rel="stylesheet" />
   </head>
-  <body class="bg-gray-50">
+  <body class="bg-gradient-to-br from-blue-50 to-blue-100">
     <!-- Navbar -->
     <nav class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,7 +36,7 @@
     </nav>
 
     <div class="min-h-screen p-4 sm:p-6 md:p-8">
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <!-- Header with navigation -->
         <nav class="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow-sm">
           <div>
@@ -53,9 +53,47 @@
           </div>
         </nav>
 
-        <!-- Todo List -->
-        <div id="todoList" class="space-y-4">
-          <!-- Todos will be inserted here -->
+        <!-- Todo Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Pending Section -->
+          <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+              <h2 class="text-lg font-semibold text-gray-800">Pending</h2>
+              <span class="ml-auto text-sm text-gray-500" id="pendingCount">0</span>
+            </div>
+            <div id="pendingTodos" class="space-y-3"></div>
+          </div>
+
+          <!-- In Progress Section -->
+          <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+              <h2 class="text-lg font-semibold text-gray-800">In Progress</h2>
+              <span class="ml-auto text-sm text-gray-500" id="inProgressCount">0</span>
+            </div>
+            <div id="inProgressTodos" class="space-y-3"></div>
+          </div>
+
+          <!-- Completed Section -->
+          <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+              <h2 class="text-lg font-semibold text-gray-800">Completed</h2>
+              <span class="ml-auto text-sm text-gray-500" id="completedCount">0</span>
+            </div>
+            <div id="completedTodos" class="space-y-3"></div>
+          </div>
+
+          <!-- Cancelled Section -->
+          <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <h2 class="text-lg font-semibold text-gray-800">Cancelled</h2>
+              <span class="ml-auto text-sm text-gray-500" id="cancelledCount">0</span>
+            </div>
+            <div id="cancelledTodos" class="space-y-3"></div>
+          </div>
         </div>
       </div>
     </div>

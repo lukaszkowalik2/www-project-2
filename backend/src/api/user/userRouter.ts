@@ -2,7 +2,7 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Router } from "express";
 import { z } from "zod";
 
-import { createApiDeleteResponse, createApiItemsResponse, createApiPostResponse, createApiPutResponse } from "@/api-docs/openAPIResponseBuilders";
+import { createApiDeleteResponse, createApiItemsResponse, createApiObjectResponse, createApiPostResponse, createApiPutResponse } from "@/api-docs/openAPIResponseBuilders";
 import { CreateUserSchema, DeleteUserSchema, UpdateUserSchema, UserSchema } from "@/api/user/userModel";
 import { userController } from "./userController";
 import { authenticateToken } from "@/common/middleware/auth";
@@ -47,3 +47,12 @@ userRegistry.registerPath({
 });
 
 userRouter.put("/:id", authenticateToken, userController.updateUser);
+
+userRegistry.registerPath({
+  method: "get",
+  path: "/users/{id}",
+  tags: ["User"],
+  responses: createApiObjectResponse(UserSchema, "Success"),
+});
+
+userRouter.get("/:id", authenticateToken, userController.getUser);
