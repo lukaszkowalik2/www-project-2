@@ -22,7 +22,6 @@ model User {
   created_at    DateTime  @default(now())
   updated_at    DateTime  @default(now())
   todos         Todo[]
-  avatar        String?
   bio           String?   @db.Text
   last_login    DateTime?
 }

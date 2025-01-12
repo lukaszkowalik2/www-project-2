@@ -7,7 +7,6 @@ export const UserSchema = z.object({
   id: z.number(),
   name: z.string(),
   email: z.string().email(),
-  avatar: z.string().optional(),
   bio: z.string().optional(),
   last_login: z.date().optional(),
   created_at: z.date(),
@@ -19,13 +18,11 @@ export const CreateUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email format"),
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
-  avatar: z.string().url().optional(),
   bio: z.string().max(500).optional(),
 });
 
 export const UpdateUserSchema = z.object({
   name: z.string().min(2).optional(),
-  avatar: z.string().url().optional(),
   bio: z.string().max(500).optional(),
   password: z.string().min(6).max(100).optional(),
 });

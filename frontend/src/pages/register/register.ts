@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      avatar: formData.get("avatar") as string,
       bio: formData.get("bio") as string,
     };
 
@@ -108,7 +107,7 @@ const clearFieldError = (fieldId: string) => {
 };
 
 const clearAllFieldErrors = () => {
-  ["email", "password", "confirmPassword", "name", "avatar", "bio"].forEach((fieldId) => {
+  ["email", "password", "confirmPassword", "name", "bio"].forEach((fieldId) => {
     clearFieldError(fieldId);
   });
 };
